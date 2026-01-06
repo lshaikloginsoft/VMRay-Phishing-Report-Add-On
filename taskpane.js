@@ -1,6 +1,15 @@
 Office.onReady(() => {
-  document.getElementById("reportBtn").onclick = reportEmail;
-  document.getElementById("cancelBtn").onclick = cancelReport;
+  const item = Office.context.mailbox.item;
+
+  if (!item) {
+    // No email is open
+    showMessage("Open any email to get started.");
+  } else {
+    // Email is open → show buttons
+    document.getElementById("buttons").style.display = "block";
+    document.getElementById("reportBtn").onclick = reportEmail;
+    document.getElementById("cancelBtn").onclick = cancelReport;
+  }
 });
 
 function reportEmail() {

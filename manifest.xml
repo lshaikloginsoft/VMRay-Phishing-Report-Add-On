@@ -6,6 +6,7 @@
   xmlns:mailappor="http://schemas.microsoft.com/office/mailappversionoverrides/1.0"
   xsi:type="MailApp">
 
+  <!-- Unique identifier -->
   <Id>b6583289-59ae-4026-baa6-ba32dfc6300a</Id>
   <Version>1.0.0.0</Version>
   <ProviderName>VMRay</ProviderName>
@@ -35,8 +36,10 @@
     </Form>
   </FormSettings>
 
+  <!-- Permissions -->
   <Permissions>ReadWriteItem</Permissions>
 
+  <!-- Rule: applies when reading a message -->
   <Rule xsi:type="RuleCollection" Mode="Or">
     <Rule xsi:type="ItemIs" ItemType="Message" FormType="Read"/>
   </Rule>
@@ -49,7 +52,8 @@
     <Hosts>
       <Host xsi:type="MailHost">
         <DesktopFormFactor>
-          <ExtensionPoint xsi:type="MessageReadCommandSurface">
+          <!-- PrimaryCommandSurface ensures button is always visible -->
+          <ExtensionPoint xsi:type="PrimaryCommandSurface">
             <OfficeTab id="TabDefault">
               <Group id="PhishingGroup">
                 <Label resid="groupLabel"/>
@@ -75,6 +79,7 @@
       </Host>
     </Hosts>
 
+    <!-- Resources -->
     <Resources>
       <bt:Images>
         <bt:Image id="icon16" DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/security_icon_16x16.png"/>
