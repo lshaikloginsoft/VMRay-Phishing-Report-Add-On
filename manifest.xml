@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:type="MessageRead">
   <Id>b6583289-59ae-4026-baa6-ba32dfc6300a</Id>
