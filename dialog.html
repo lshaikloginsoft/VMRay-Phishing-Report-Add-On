@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<body>
+    <h3>Redirect To:</h3>
+    <input type="email" id="emailInput" placeholder="address@example.com">
+    <button onclick="sendAction()">Redirect</button>
+
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <script>
+        Office.onReady();
+
+        function sendAction() {
+            const email = document.getElementById('emailInput').value;
+            // Send the email address back to the main add-in script
+            Office.context.ui.messageParent(email);
+        }
+    </script>
+</body>
+</html>

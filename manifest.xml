@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:type="MessageRead">
+  <Id>b6583289-59ae-4026-baa6-ba32dfc6300a</Id>
+  <Version>1.0.0.0</Version>
+  <ProviderName>VMRay</ProviderName>
+  <DefaultLocale>en-US</DefaultLocale>
+  <DisplayName DefaultValue="Report Phishing"/>
+  <Description DefaultValue="Report suspicious emails to security."/>
+  <IconUrl DefaultValue="https://yourdomain.com/icon.png"/>
+  <SupportUrl DefaultValue="https://yourdomain.com/support"/>
+
+  <Hosts>
+    <Host Name="Mailbox"/>
+  </Hosts>
+
+  <Requirements>
+    <Sets DefaultMinVersion="1.1">
+      <Set Name="Mailbox"/>
+    </Sets>
+  </Requirements>
+
+  <FormSettings>
+    <Form xsi:type="ItemRead">
+      <DesktopSettings>
+        <SourceLocation DefaultValue="https://yourdomain.com/taskpane.html"/>
+        <RequestedHeight>250</RequestedHeight>
+      </DesktopSettings>
+    </Form>
+  </FormSettings>
+
+  <ExtensionPoint xsi:type="MessageReadCommandSurface">
+    <OfficeTab id="Message">
+      <Group id="PhishingGroup">
+        <Label resid="groupLabel"/>
+        <Control xsi:type="Button" id="ReportPhishingButton">
+          <Label resid="buttonLabel"/>
+          <Supertip>
+            <Title resid="buttonLabel"/>
+            <Description resid="buttonDescription"/>
+          </Supertip>
+          <Icon>
+            <bt:Image size="16" resid="icon16"/>
+            <bt:Image size="32" resid="icon32"/>
+            <bt:Image size="80" resid="icon80"/>
+          </Icon>
+          <Action xsi:type="ShowTaskpane">
+            <SourceLocation resid="taskpaneUrl"/>
+          </Action>
+        </Control>
+      </Group>
+    </OfficeTab>
+  </ExtensionPoint>
+
+  <Resources>
+    <bt:Images>
+      <bt:Image id="icon16" DefaultValue="https://yourdomain.com/icon16.png"/>
+      <bt:Image id="icon32" DefaultValue="https://yourdomain.com/icon32.png"/>
+      <bt:Image id="icon80" DefaultValue="https://yourdomain.com/icon80.png"/>
+    </bt:Images>
+    <bt:Urls>
+      <bt:Url id="taskpaneUrl" DefaultValue="https://yourdomain.com/taskpane.html"/>
+    </bt:Urls>
+    <bt:ShortStrings>
+      <bt:String id="groupLabel" DefaultValue="Security"/>
+      <bt:String id="buttonLabel" DefaultValue="Report Phishing"/>
+    </bt:ShortStrings>
+    <bt:LongStrings>
+      <bt:String id="buttonDescription" DefaultValue="Report this email to your security team."/>
+    </bt:LongStrings>
+  </Resources>
+</OfficeApp>
