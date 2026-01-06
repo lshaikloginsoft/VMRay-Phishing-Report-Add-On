@@ -41,6 +41,7 @@
     <Rule xsi:type="ItemIs" ItemType="Message" FormType="Read"/>
   </Rule>
 
+  <!-- Modern VersionOverrides for Ribbon button -->
   <VersionOverrides
     xmlns="http://schemas.microsoft.com/office/mailappversionoverrides"
     xsi:type="VersionOverridesV1_0">
@@ -48,32 +49,6 @@
     <Hosts>
       <Host xsi:type="MailHost">
         <DesktopFormFactor>
-
-          <!-- Home ribbon (always visible in Mail module) -->
-          <ExtensionPoint xsi:type="Module">
-            <OfficeTab id="TabDefault">
-              <Group id="PhishingGroupModule">
-                <Label resid="groupLabel"/>
-                <Control xsi:type="Button" id="ReportPhishingButtonModule">
-                  <Label resid="buttonLabel"/>
-                  <Supertip>
-                    <Title resid="buttonLabel"/>
-                    <Description resid="buttonDescription"/>
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="icon16"/>
-                    <bt:Image size="32" resid="icon32"/>
-                    <bt:Image size="80" resid="icon80"/>
-                  </Icon>
-                  <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="taskpaneUrl"/>
-                  </Action>
-                </Control>
-              </Group>
-            </OfficeTab>
-          </ExtensionPoint>
-
-          <!-- Read ribbon (when an email is open) -->
           <ExtensionPoint xsi:type="MessageReadCommandSurface">
             <OfficeTab id="TabDefault">
               <Group id="PhishingGroup">
@@ -96,7 +71,6 @@
               </Group>
             </OfficeTab>
           </ExtensionPoint>
-
         </DesktopFormFactor>
       </Host>
     </Hosts>
