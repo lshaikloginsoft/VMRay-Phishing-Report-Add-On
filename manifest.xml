@@ -8,8 +8,8 @@
   <DefaultLocale>en-US</DefaultLocale>
   <DisplayName DefaultValue="Report Phishing"/>
   <Description DefaultValue="Report suspicious emails to security."/>
-  <IconUrl DefaultValue="https://yourdomain.com/icon.png"/>
-  <SupportUrl DefaultValue="https://yourdomain.com/support"/>
+  <IconUrl DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/security_icon.png"/>
+  <SupportUrl DefaultValue="https://vmray.com/support"/>
 
   <Hosts>
     <Host Name="Mailbox"/>
@@ -24,7 +24,7 @@
   <FormSettings>
     <Form xsi:type="ItemRead">
       <DesktopSettings>
-        <SourceLocation DefaultValue="https://yourdomain.com/taskpane.html"/>
+        <SourceLocation DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/taskpane.html"/>
         <RequestedHeight>250</RequestedHeight>
       </DesktopSettings>
     </Form>
@@ -55,12 +55,12 @@
 
   <Resources>
     <bt:Images>
-      <bt:Image id="icon16" DefaultValue="https://yourdomain.com/icon16.png"/>
-      <bt:Image id="icon32" DefaultValue="https://yourdomain.com/icon32.png"/>
-      <bt:Image id="icon80" DefaultValue="https://yourdomain.com/icon80.png"/>
+      <bt:Image id="icon16" DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/security_icon_16x16.png"/>
+      <bt:Image id="icon32" DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/security_icon_32x32.png"/>
+      <bt:Image id="icon80" DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/security_icon_80x80.png"/>
     </bt:Images>
     <bt:Urls>
-      <bt:Url id="taskpaneUrl" DefaultValue="https://yourdomain.com/taskpane.html"/>
+      <bt:Url id="taskpaneUrl" DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/taskpane.html"/>
     </bt:Urls>
     <bt:ShortStrings>
       <bt:String id="groupLabel" DefaultValue="Security"/>
