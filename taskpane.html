@@ -2,12 +2,110 @@
 <html>
 <head>
   <title>Report Phishing</title>
+  <meta charset="utf-8" />
   <script src="taskpane.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      background-color: #ffffff;
+      color: #333;
+    }
+
+    /* Header */
+    .header {
+      background-color: #d32f2f;
+      color: #fff;
+      padding: 14px 16px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    /* Content */
+    .container {
+      padding: 20px 16px;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .message {
+      font-size: 14px;
+      margin-bottom: 20px;
+      line-height: 1.4;
+    }
+
+    /* Buttons */
+    .actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    button {
+      min-width: 110px;
+      padding: 8px 14px;
+      border-radius: 18px;
+      font-size: 13px;
+      cursor: pointer;
+      border: none;
+    }
+
+    #reportBtn {
+      background-color: #3f51b5;
+      color: #fff;
+    }
+
+    #reportBtn:hover {
+      background-color: #344296;
+    }
+
+    #cancelBtn {
+      background-color: #ffffff;
+      color: #3f51b5;
+      border: 1px solid #3f51b5;
+    }
+
+    #cancelBtn:hover {
+      background-color: #f2f3ff;
+    }
+
+    #status {
+      margin-top: 16px;
+      font-size: 13px;
+      color: #555;
+    }
+
+    button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+  </style>
 </head>
+
 <body>
-  <h2>Report Phishing</h2>
-  <button id="reportBtn">Yes, Report</button>
-  <button id="cancelBtn">Cancel</button>
-  <p id="status"></p>
+  <div class="header">Report Phishing</div>
+
+  <div class="container">
+    <div class="subtitle">Confirm Report</div>
+
+    <div class="message">
+      Are you sure you want to report this email?<br />
+      This will forward the raw email to security.
+    </div>
+
+    <div class="actions">
+      <button id="reportBtn">Yes, Report</button>
+      <button id="cancelBtn">Cancel</button>
+    </div>
+
+    <p id="status"></p>
+  </div>
 </body>
 </html>
