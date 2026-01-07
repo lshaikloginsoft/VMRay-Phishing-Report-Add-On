@@ -63,13 +63,14 @@ Office.onReady((info) => {
 });
 
 /* Graph-first with EWS fallback */
-function forwardMailWithFallback(item, recipientEmail, statusCallback) {
+async function forwardMailWithFallback(item, recipientEmail, statusCallback) {
   console.log("forwardMailWithFallback called with recipient:", recipientEmail);
 
+  // Try Outlook REST API first (since callback token is scoped for REST)
   Office.context.mailbox.getCallbackTokenAsync({ isRest: true }, async (result) => {
     if (result.status === Office.AsyncResultStatus.Succeeded) {
       const accessToken = result.value;
-      console.log("Got Graph token");
+      console.log("Got REST token");
 
       const restId = Office.context.mailbox.convertToRestId(
         item.itemId,
@@ -77,40 +78,41 @@ function forwardMailWithFallback(item, recipientEmail, statusCallback) {
       );
       console.log("REST ID:", restId);
 
-      const graphEndpoint = `https://graph.microsoft.com/v1.0/me/messages/${restId}/forward`;
+      const outlookRestEndpoint = `${Office.context.mailbox.restUrl}/v2.0/me/messages/${restId}/forward`;
 
       try {
-        const response = await fetch(graphEndpoint, {
+        const response = await fetch(outlookRestEndpoint, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${accessToken}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            comment: "Forwarded by Outlook add-in",
-            toRecipients: [{ emailAddress: { address: recipientEmail } }],
+            Comment: "Forwarded by Outlook add-in",
+            ToRecipients: [{ EmailAddress: { Address: recipientEmail } }],
           }),
         });
 
         if (response.ok) {
-          console.log("Graph forward succeeded");
+          console.log("Outlook REST forward succeeded");
           statusCallback(true);
           return;
         } else {
-          console.error("Graph forward failed:", await response.text());
+          console.error("Outlook REST forward failed:", await response.text());
         }
       } catch (err) {
-        console.error("Graph fetch error:", err);
+        console.error("Outlook REST fetch error:", err);
       }
     } else {
-      console.error("Graph token error:", result.error);
+      console.error("Token error:", result.error);
     }
 
-    // If Graph fails, fall back to EWS
+    // Fallback to EWS if REST fails
     console.log("Falling back to EWS SOAP forwarding...");
     forwardMailEws(item, recipientEmail, statusCallback);
   });
 }
+
 
 /* EWS SOAP fallback */
 function forwardMailEws(item, recipientEmail, callback) {
