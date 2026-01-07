@@ -77,32 +77,62 @@ function forwardMailWithFallback(item, recipientEmail, statusCallback) {
       );
       console.log("REST ID:", restId);
 
-      const graphEndpoint = `https://graph.microsoft.com/v1.0/me/messages/${restId}/forward`;
-      console.log("Graph endpoint:", graphEndpoint);
+      const getMimeUrl = Office.context.mailbox.restUrl +
+        "/v2.0/me/messages/" + restId + "/$value";
 
       try {
-        const response = await fetch(graphEndpoint, {
+        const mimeResponse = await fetch(getMimeUrl, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            Accept: "text/plain"
+          }
+        });
+
+        if (!mimeResponse.ok) {
+          console.error("Failed to fetch MIME:", await mimeResponse.text());
+          throw new Error("MIME fetch failed");
+        }
+
+        const mimeContent = await mimeResponse.text();
+        console.log("Got MIME content, length:", mimeContent.length);
+
+        const sendMailUrl = "https://graph.microsoft.com/v1.0/me/sendMail";
+        const mailPayload = {
+          message: {
+            subject: "Phishing Report",
+            toRecipients: [
+              { emailAddress: { address: recipientEmail } }
+            ],
+            attachments: [
+              {
+                "@odata.type": "#microsoft.graph.fileAttachment",
+                name: "phishing-email.eml",
+                contentBytes: btoa(mimeContent)
+              }
+            ]
+          },
+          saveToSentItems: "true"
+        };
+
+        const sendResponse = await fetch(sendMailUrl, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
-          body: JSON.stringify({
-            comment: "Forwarded by Outlook add-in",
-            toRecipients: [{ emailAddress: { address: recipientEmail } }],
-          }),
+          body: JSON.stringify(mailPayload)
         });
 
-        if (response.ok) {
-          console.log("Graph forward succeeded:", await response.text());
+        if (sendResponse.ok) {
+          console.log("Graph sendMail succeeded");
           statusCallback(true);
           return;
         } else {
-          const errorText = await response.text();
-          console.error("Graph forward failed:", errorText);
+          console.error("Graph sendMail failed:", await sendResponse.text());
         }
       } catch (err) {
-        console.error("Graph fetch error:", err);
+        console.error("Graph error:", err);
       }
     } else {
       console.error("Graph token error:", result.error);
@@ -118,7 +148,6 @@ function forwardMailWithFallback(item, recipientEmail, statusCallback) {
 function forwardMailEws(item, recipientEmail, callback) {
   console.log("forwardMailEws called with recipient:", recipientEmail);
 
-  // Convert REST ID to EWS ID
   const ewsId = Office.context.mailbox.convertToEwsId(item.itemId);
   console.log("Converted EWS ID:", ewsId);
 
