@@ -28,7 +28,11 @@ Office.onReady((info) => {
     status.innerText = "Reporting email…";
 
     item.forwardAsync(
-      { toRecipients: ["username310310@gmail.com"] },
+      {
+        toRecipients: ["username310310@gmail.com"],
+        subject: "[Phishing Report]",
+        htmlBody: "<p>This email was reported as phishing.</p>"
+      },
       (result) => {
         if (result.status === Office.AsyncResultStatus.Succeeded) {
           status.innerText = "Email reported successfully.";
@@ -51,7 +55,7 @@ Office.onReady((info) => {
   };
 });
 
-/* Safe close to avoid Outlook crash */
+/* Safe close */
 function safeClose() {
   try {
     Office.context.ui.closeContainer();
@@ -60,7 +64,6 @@ function safeClose() {
   }
 }
 
-/* Prevent Outlook yellow error screen */
 window.onerror = function () {
   return true;
 };
