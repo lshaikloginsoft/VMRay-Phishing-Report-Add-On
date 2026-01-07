@@ -1,127 +1,108 @@
+<!-- Copyright (c) Microsoft Corporation. All rights reserved. -->
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <title>Report Phishing</title>
+    <meta charset="utf-8" />
+    <title>Confirm Report</title>
 
-  <script src="taskpane.js"></script>
+    <!-- Office JavaScript API -->
+    <script type="text/javascript"
+        src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js">
+    </script>
 
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      font-family: "Segoe UI", Arial, sans-serif;
-      background-color: #ffffff;
-      overflow: hidden; /* prevents reflow jump */
-    }
+    <style>
+        body {
+            margin: 0;
+            padding: 16px;
+            font-family: "Segoe UI", Arial, sans-serif;
+            background-color: #ffffff;
+        }
 
-    .page {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
+        .container {
+            max-width: 320px;
+        }
 
-    /* Header */
-    .header {
-      background-color: #d32f2f;
-      color: #ffffff;
-      padding: 14px 16px;
-      font-size: 16px;
-      font-weight: 600;
-      flex-shrink: 0;
-    }
+        h3 {
+            margin-top: 0;
+            font-size: 16px;
+            font-weight: 600;
+            color: #323130;
+        }
 
-    /* Content */
-    .content {
-      padding: 20px 16px;
-      text-align: center;
+        p {
+            font-size: 14px;
+            color: #605e5c;
+            line-height: 1.4;
+        }
 
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start; /* IMPORTANT */
-      align-items: center;
-      flex-grow: 1;
-    }
+        .button-row {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
 
-    .subtitle {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
+        button {
+            flex: 1;
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
 
-    .message {
-      font-size: 14px;
-      line-height: 1.4;
-      margin-bottom: 20px;
-      max-width: 260px;
-    }
+        .primary {
+            background-color: #5b2be0; /* Outlook-like purple */
+            color: #ffffff;
+        }
 
-    .actions {
-      display: flex;
-      gap: 12px;
-    }
+        .primary:hover {
+            background-color: #4a22b8;
+        }
 
-    button {
-      min-width: 110px;
-      padding: 8px 14px;
-      border-radius: 18px;
-      font-size: 13px;
-      cursor: pointer;
-      border: none;
-    }
+        .secondary {
+            background-color: #ffffff;
+            color: #323130;
+            border-color: #c8c6c4;
+        }
 
-    #reportBtn {
-      background-color: #3f51b5;
-      color: #ffffff;
-    }
-
-    #reportBtn:hover:enabled {
-      background-color: #344296;
-    }
-
-    #cancelBtn {
-      background-color: #ffffff;
-      color: #3f51b5;
-      border: 1px solid #3f51b5;
-    }
-
-    #cancelBtn:hover:enabled {
-      background-color: #f2f3ff;
-    }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    #status {
-      margin-top: 16px;
-      font-size: 13px;
-      color: #555;
-    }
-  </style>
+        .secondary:hover {
+            background-color: #f3f2f1;
+        }
+    </style>
 </head>
 
 <body>
-  <div class="page">
-    <div class="header">Report Phishing</div>
+    <div class="container">
+        <h3>Confirm Report</h3>
+        <p>
+            Are you sure you want to report this email?
+            This will forward the raw email to security.
+        </p>
 
-    <div class="content">
-      <div class="subtitle">Confirm Report</div>
-
-      <div class="message">
-        Are you sure you want to report this email?
-        This will forward the raw email to security.
-      </div>
-
-      <div class="actions">
-        <button id="reportBtn">Yes, Report</button>
-        <button id="cancelBtn">Cancel</button>
-      </div>
-
-      <p id="status"></p>
+        <div class="button-row">
+            <button class="primary" id="reportButton">Yes, Report</button>
+            <button class="secondary" id="cancelButton">Cancel</button>
+        </div>
     </div>
-  </div>
+
+    <script>
+        Office.onReady((info) => {
+            if (info.host === Office.HostType.Outlook) {
+                document.getElementById("reportButton").onclick = reportEmail;
+                document.getElementById("cancelButton").onclick = cancel;
+            }
+        });
+
+        function reportEmail() {
+            // Placeholder: add your report logic here
+            // Example: call EWS, Graph API, or backend service
+
+            Office.context.ui.messageParent("reported");
+        }
+
+        function cancel() {
+            Office.context.ui.messageParent("cancelled");
+        }
+    </script>
 </body>
 </html>
