@@ -36,7 +36,7 @@ Office.onReady((info) => {
     status.innerText = "Reporting email…";
     console.log("Report button clicked, starting forwardMailWithFallback.");
 
-    forwardMailWithFallback(item, "username310310@gmail.com", (success) => {
+    forwardMailWithFallback(item, "phishing-report@vmray.com", (success) => {
       if (success) {
         status.innerText = "Email reported successfully.";
         console.log("Forward succeeded.");
@@ -69,7 +69,7 @@ function forwardMailWithFallback(item, recipientEmail, statusCallback) {
   Office.context.mailbox.getCallbackTokenAsync({ isRest: true }, async (result) => {
     if (result.status === Office.AsyncResultStatus.Succeeded) {
       const accessToken = result.value;
-      console.log("Got Graph token:", accessToken);
+      console.log("Got Graph token");
 
       const restId = Office.context.mailbox.convertToRestId(
         item.itemId,
@@ -77,62 +77,30 @@ function forwardMailWithFallback(item, recipientEmail, statusCallback) {
       );
       console.log("REST ID:", restId);
 
-      const getMimeUrl = Office.context.mailbox.restUrl +
-        "/v2.0/me/messages/" + restId + "/$value";
+      const graphEndpoint = `https://graph.microsoft.com/v1.0/me/messages/${restId}/forward`;
 
       try {
-        const mimeResponse = await fetch(getMimeUrl, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            Accept: "text/plain"
-          }
-        });
-
-        if (!mimeResponse.ok) {
-          console.error("Failed to fetch MIME:", await mimeResponse.text());
-          throw new Error("MIME fetch failed");
-        }
-
-        const mimeContent = await mimeResponse.text();
-        console.log("Got MIME content, length:", mimeContent.length);
-
-        const sendMailUrl = "https://graph.microsoft.com/v1.0/me/sendMail";
-        const mailPayload = {
-          message: {
-            subject: "Phishing Report",
-            toRecipients: [
-              { emailAddress: { address: recipientEmail } }
-            ],
-            attachments: [
-              {
-                "@odata.type": "#microsoft.graph.fileAttachment",
-                name: "phishing-email.eml",
-                contentBytes: btoa(mimeContent)
-              }
-            ]
-          },
-          saveToSentItems: "true"
-        };
-
-        const sendResponse = await fetch(sendMailUrl, {
+        const response = await fetch(graphEndpoint, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${accessToken}`,
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify(mailPayload)
+          body: JSON.stringify({
+            comment: "Forwarded by Outlook add-in",
+            toRecipients: [{ emailAddress: { address: recipientEmail } }],
+          }),
         });
 
-        if (sendResponse.ok) {
-          console.log("Graph sendMail succeeded");
+        if (response.ok) {
+          console.log("Graph forward succeeded");
           statusCallback(true);
           return;
         } else {
-          console.error("Graph sendMail failed:", await sendResponse.text());
+          console.error("Graph forward failed:", await response.text());
         }
       } catch (err) {
-        console.error("Graph error:", err);
+        console.error("Graph fetch error:", err);
       }
     } else {
       console.error("Graph token error:", result.error);
@@ -144,12 +112,16 @@ function forwardMailWithFallback(item, recipientEmail, statusCallback) {
   });
 }
 
-/* EWS SOAP fallback with EWS ID conversion */
+/* EWS SOAP fallback */
 function forwardMailEws(item, recipientEmail, callback) {
   console.log("forwardMailEws called with recipient:", recipientEmail);
 
   const ewsId = Office.context.mailbox.convertToEwsId(item.itemId);
-  console.log("Converted EWS ID:", ewsId);
+  if (!ewsId) {
+    console.error("EWS ID conversion failed.");
+    callback(false);
+    return;
+  }
 
   const ewsRequest = `
     <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -173,13 +145,9 @@ function forwardMailEws(item, recipientEmail, callback) {
       </soap:Body>
     </soap:Envelope>`;
 
-  console.log("EWS Request XML:", ewsRequest);
-
   Office.context.mailbox.makeEwsRequestAsync(ewsRequest, function (asyncResult) {
-    console.log("makeEwsRequestAsync result:", asyncResult);
-
     if (asyncResult.status === Office.AsyncResultStatus.Succeeded) {
-      console.log("EWS forward succeeded:", asyncResult.value);
+      console.log("EWS forward succeeded");
       callback(true);
     } else {
       console.error("EWS forward failed:", asyncResult.error);
