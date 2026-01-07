@@ -34,19 +34,18 @@ Office.onReady((info) => {
     disableButtons();
 
     status.innerText = "Reporting email…";
-    console.log("Report button clicked, starting forwardMail.");
+    console.log("Report button clicked, starting forwardMailWithFallback.");
 
-    forwardMailGraph(item, "username310310@gmail.com")
-      .then(() => {
+    forwardMailWithFallback(item, "username310310@gmail.com", (success) => {
+      if (success) {
         status.innerText = "Email reported successfully.";
         console.log("Forward succeeded.");
-        setTimeout(safeClose, 1200);
-      })
-      .catch((err) => {
+      } else {
         status.innerText = "Failed to report email.";
-        console.error("Forward failed:", err);
-        setTimeout(safeClose, 1200);
-      });
+        console.error("Forward failed.");
+      }
+      setTimeout(safeClose, 1200);
+    });
   };
 
   cancelBtn.onclick = () => {
@@ -63,21 +62,15 @@ Office.onReady((info) => {
   };
 });
 
-/* Forward mail using Microsoft Graph */
-async function forwardMailGraph(item, recipientEmail) {
-  console.log("forwardMailGraph called with recipient:", recipientEmail);
+/* Graph-first with EWS fallback */
+function forwardMailWithFallback(item, recipientEmail, statusCallback) {
+  console.log("forwardMailWithFallback called with recipient:", recipientEmail);
 
-  return new Promise((resolve, reject) => {
-    Office.context.mailbox.getCallbackTokenAsync({ isRest: true }, async (result) => {
-      if (result.status !== Office.AsyncResultStatus.Succeeded) {
-        console.error("Failed to get callback token:", result.error);
-        return reject(result.error);
-      }
-
+  Office.context.mailbox.getCallbackTokenAsync({ isRest: true }, async (result) => {
+    if (result.status === Office.AsyncResultStatus.Succeeded) {
       const accessToken = result.value;
-      console.log("Got callback token:", accessToken);
+      console.log("Got Graph token:", accessToken);
 
-      // REST ID of the item
       const restId = Office.context.mailbox.convertToRestId(
         item.itemId,
         Office.MailboxEnums.RestVersion.v2_0
@@ -96,29 +89,72 @@ async function forwardMailGraph(item, recipientEmail) {
           },
           body: JSON.stringify({
             comment: "Forwarded by Outlook add-in",
-            toRecipients: [
-              {
-                emailAddress: {
-                  address: recipientEmail,
-                },
-              },
-            ],
+            toRecipients: [{ emailAddress: { address: recipientEmail } }],
           }),
         });
 
         if (response.ok) {
           console.log("Graph forward succeeded:", await response.text());
-          resolve();
+          statusCallback(true);
+          return;
         } else {
           const errorText = await response.text();
           console.error("Graph forward failed:", errorText);
-          reject(errorText);
         }
       } catch (err) {
         console.error("Graph fetch error:", err);
-        reject(err);
       }
-    });
+    } else {
+      console.error("Graph token error:", result.error);
+    }
+
+    // If Graph fails, fall back to EWS
+    console.log("Falling back to EWS SOAP forwarding...");
+    forwardMailEws(item, recipientEmail, statusCallback);
+  });
+}
+
+/* EWS SOAP fallback */
+function forwardMailEws(item, recipientEmail, callback) {
+  console.log("forwardMailEws called with recipient:", recipientEmail);
+
+  const itemId = item.itemId;
+  console.log("ItemId:", itemId);
+
+  const ewsRequest = `
+    <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                   xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+                   xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+      <soap:Body>
+        <CreateItem MessageDisposition="SendAndSaveCopy"
+                    xmlns="http://schemas.microsoft.com/exchange/services/2006/messages">
+          <Items>
+            <ForwardItem>
+              <ReferenceItemId Id="${itemId}" />
+              <ToRecipients>
+                <t:Mailbox>
+                  <t:EmailAddress>${recipientEmail}</t:EmailAddress>
+                </t:Mailbox>
+              </ToRecipients>
+            </ForwardItem>
+          </Items>
+        </CreateItem>
+      </soap:Body>
+    </soap:Envelope>`;
+
+  console.log("EWS Request XML:", ewsRequest);
+
+  Office.context.mailbox.makeEwsRequestAsync(ewsRequest, function (asyncResult) {
+    console.log("makeEwsRequestAsync result:", asyncResult);
+
+    if (asyncResult.status === Office.AsyncResultStatus.Succeeded) {
+      console.log("EWS forward succeeded:", asyncResult.value);
+      callback(true);
+    } else {
+      console.error("EWS forward failed:", asyncResult.error);
+      callback(false);
+    }
   });
 }
 
