@@ -114,12 +114,13 @@ function forwardMailWithFallback(item, recipientEmail, statusCallback) {
   });
 }
 
-/* EWS SOAP fallback */
+/* EWS SOAP fallback with EWS ID conversion */
 function forwardMailEws(item, recipientEmail, callback) {
   console.log("forwardMailEws called with recipient:", recipientEmail);
 
-  const itemId = item.itemId;
-  console.log("ItemId:", itemId);
+  // Convert REST ID to EWS ID
+  const ewsId = Office.context.mailbox.convertToEwsId(item.itemId);
+  console.log("Converted EWS ID:", ewsId);
 
   const ewsRequest = `
     <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -131,7 +132,7 @@ function forwardMailEws(item, recipientEmail, callback) {
                     xmlns="http://schemas.microsoft.com/exchange/services/2006/messages">
           <Items>
             <ForwardItem>
-              <ReferenceItemId Id="${itemId}" />
+              <ReferenceItemId Id="${ewsId}" />
               <ToRecipients>
                 <t:Mailbox>
                   <t:EmailAddress>${recipientEmail}</t:EmailAddress>
