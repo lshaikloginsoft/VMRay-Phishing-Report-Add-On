@@ -1,31 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Report Phishing</title>
   <meta charset="utf-8" />
+  <title>Report Phishing</title>
+
   <script src="taskpane.js"></script>
 
   <style>
-    body {
+    html, body {
+      height: 100%;
       margin: 0;
+      padding: 0;
       font-family: "Segoe UI", Arial, sans-serif;
       background-color: #ffffff;
-      color: #333;
+      overflow: hidden; /* prevents reflow jump */
+    }
+
+    .page {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
     }
 
     /* Header */
     .header {
       background-color: #d32f2f;
-      color: #fff;
+      color: #ffffff;
       padding: 14px 16px;
       font-size: 16px;
       font-weight: 600;
+      flex-shrink: 0;
     }
 
     /* Content */
-    .container {
+    .content {
       padding: 20px 16px;
       text-align: center;
+
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start; /* IMPORTANT */
+      align-items: center;
+      flex-grow: 1;
     }
 
     .subtitle {
@@ -36,14 +52,13 @@
 
     .message {
       font-size: 14px;
-      margin-bottom: 20px;
       line-height: 1.4;
+      margin-bottom: 20px;
+      max-width: 260px;
     }
 
-    /* Buttons */
     .actions {
       display: flex;
-      justify-content: center;
       gap: 12px;
     }
 
@@ -58,10 +73,10 @@
 
     #reportBtn {
       background-color: #3f51b5;
-      color: #fff;
+      color: #ffffff;
     }
 
-    #reportBtn:hover {
+    #reportBtn:hover:enabled {
       background-color: #344296;
     }
 
@@ -71,8 +86,13 @@
       border: 1px solid #3f51b5;
     }
 
-    #cancelBtn:hover {
+    #cancelBtn:hover:enabled {
       background-color: #f2f3ff;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
     }
 
     #status {
@@ -80,32 +100,28 @@
       font-size: 13px;
       color: #555;
     }
-
-    button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-
   </style>
 </head>
 
 <body>
-  <div class="header">Report Phishing</div>
+  <div class="page">
+    <div class="header">Report Phishing</div>
 
-  <div class="container">
-    <div class="subtitle">Confirm Report</div>
+    <div class="content">
+      <div class="subtitle">Confirm Report</div>
 
-    <div class="message">
-      Are you sure you want to report this email?<br />
-      This will forward the raw email to security.
+      <div class="message">
+        Are you sure you want to report this email?
+        This will forward the raw email to security.
+      </div>
+
+      <div class="actions">
+        <button id="reportBtn">Yes, Report</button>
+        <button id="cancelBtn">Cancel</button>
+      </div>
+
+      <p id="status"></p>
     </div>
-
-    <div class="actions">
-      <button id="reportBtn">Yes, Report</button>
-      <button id="cancelBtn">Cancel</button>
-    </div>
-
-    <p id="status"></p>
   </div>
 </body>
 </html>

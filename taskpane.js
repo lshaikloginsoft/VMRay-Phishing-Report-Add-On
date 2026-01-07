@@ -1,28 +1,34 @@
-Office.onReady(() => {
+let actionTaken = false;
+
+Office.onReady((info) => {
+  if (info.host !== Office.HostType.Outlook) {
+    return;
+  }
+
   const item = Office.context.mailbox.item;
   const reportBtn = document.getElementById("reportBtn");
   const cancelBtn = document.getElementById("cancelBtn");
   const status = document.getElementById("status");
 
   if (!item) {
-    status.innerText = "Open any email to get started.";
+    status.innerText = "Please open an email to report phishing.";
     return;
   }
 
-  let actionTaken = false; // prevents multiple clicks
+  function disableButtons() {
+    reportBtn.disabled = true;
+    cancelBtn.disabled = true;
+  }
 
   reportBtn.onclick = () => {
     if (actionTaken) return;
     actionTaken = true;
+    disableButtons();
 
-    // Disable both buttons
-    reportBtn.disabled = true;
-    cancelBtn.disabled = true;
-
-    const recipient = "username310310@gmail.com";
+    status.innerText = "Reporting email…";
 
     item.forwardAsync(
-      { toRecipients: [recipient] },
+      { toRecipients: ["username310310@gmail.com"] },
       (result) => {
         if (result.status === Office.AsyncResultStatus.Succeeded) {
           status.innerText = "Email reported successfully.";
@@ -30,10 +36,7 @@ Office.onReady(() => {
           status.innerText = "Failed to report email.";
         }
 
-        // Close task pane after a short delay
-        setTimeout(() => {
-          Office.context.ui.closeContainer();
-        }, 800);
+        setTimeout(safeClose, 1200);
       }
     );
   };
@@ -41,14 +44,23 @@ Office.onReady(() => {
   cancelBtn.onclick = () => {
     if (actionTaken) return;
     actionTaken = true;
-
-    // Disable both buttons
-    reportBtn.disabled = true;
-    cancelBtn.disabled = true;
+    disableButtons();
 
     status.innerText = "Report cancelled.";
-
-    // Close task pane immediately
-    Office.context.ui.closeContainer();
+    setTimeout(safeClose, 500);
   };
 });
+
+/* Safe close to avoid Outlook crash */
+function safeClose() {
+  try {
+    Office.context.ui.closeContainer();
+  } catch (e) {
+    console.error("Close failed:", e);
+  }
+}
+
+/* Prevent Outlook yellow error screen */
+window.onerror = function () {
+  return true;
+};
