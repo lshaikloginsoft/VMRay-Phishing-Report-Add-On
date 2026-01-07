@@ -24,7 +24,7 @@ hr {
 
 .confirm-text {
   font-size: 14px;
-  font-weight: 500; /* light-bold */
+  font-weight: 500;
   color: #605e5c;
   line-height: 1.5;
 }
@@ -40,12 +40,12 @@ hr {
   padding: 9px 12px;
   font-size: 14px;
   font-weight: 600;
-  border-radius: 6px; /* rounded corners */
+  border-radius: 6px; 
   cursor: pointer;
 }
 
 .btn-primary {
-  background-color: #2b59c3; /* dark blue */
+  background-color: #2b59c3; 
   color: #ffffff;
   border: none;
 }
@@ -56,7 +56,7 @@ hr {
 
 .btn-cancel {
   background-color: #ffffff;
-  color: #c50f1f; /* red text */
+  color: #c50f1f; 
   border: 1px solid #c8c6c4;
 }
 

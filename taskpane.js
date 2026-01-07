@@ -27,22 +27,15 @@ Office.onReady((info) => {
 
     status.innerText = "Reporting email…";
 
-    item.forwardAsync(
-      {
-        toRecipients: ["username310310@gmail.com"],
-        subject: "[Phishing Report]",
-        htmlBody: "<p>This email was reported as phishing.</p>"
-      },
-      (result) => {
-        if (result.status === Office.AsyncResultStatus.Succeeded) {
-          status.innerText = "Email reported successfully.";
-        } else {
-          status.innerText = "Failed to report email.";
-        }
-
-        setTimeout(safeClose, 1200);
+    // Call  forward method
+    forwardMail(item, "username310310@gmail.com", (success) => {
+      if (success) {
+        status.innerText = "Email reported successfully.";
+      } else {
+        status.innerText = "Failed to report email.";
       }
-    );
+      setTimeout(safeClose, 1200);
+    });
   };
 
   cancelBtn.onclick = () => {
@@ -50,10 +43,47 @@ Office.onReady((info) => {
     actionTaken = true;
     disableButtons();
 
-    status.innerText = "Report cancelled.";
+    status.innerText = "Reporting cancelled.";
     setTimeout(safeClose, 500);
   };
 });
+
+/* Custom forward method using EWS */
+function forwardMail(item, recipientEmail, callback) {
+  const itemId = item.itemId;
+
+  const ewsRequest = `
+    <soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                   xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"
+                   xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">
+      <soap:Body>
+        <CreateItem MessageDisposition="SendAndSaveCopy"
+                    xmlns="http://schemas.microsoft.com/exchange/services/2006/messages">
+          <Items>
+            <ForwardItem>
+              <ReferenceItemId Id="${itemId}" />
+              <ToRecipients>
+                <t:Mailbox>
+                  <t:EmailAddress>${recipientEmail}</t:EmailAddress>
+                </t:Mailbox>
+              </ToRecipients>
+            </ForwardItem>
+          </Items>
+        </CreateItem>
+      </soap:Body>
+    </soap:Envelope>`;
+
+  Office.context.mailbox.makeEwsRequestAsync(ewsRequest, function (asyncResult) {
+    if (asyncResult.status === Office.AsyncResultStatus.Succeeded) {
+      console.log("Mail forwarded successfully!");
+      callback(true);
+    } else {
+      console.error("Error forwarding mail: " + asyncResult.error.message);
+      callback(false);
+    }
+  });
+}
 
 /* Safe close */
 function safeClose() {
