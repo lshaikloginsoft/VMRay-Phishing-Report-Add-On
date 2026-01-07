@@ -1,98 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<OfficeApp
-  xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
-  xmlns:mailappor="http://schemas.microsoft.com/office/mailappversionoverrides/1.0"
-  xsi:type="MailApp">
+<OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:bt="http://schemas.microsoft.com/office/officeappbasictypes/1.0"
+           xsi:type="MailApp">
 
+  <!-- Required basic info -->
   <Id>b6583289-59ae-4026-baa6-ba32dfc6300a</Id>
   <Version>1.0.0.0</Version>
   <ProviderName>VMRay</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
+
   <DisplayName DefaultValue="Report Phishing"/>
   <Description DefaultValue="Report suspicious emails to security."/>
-  <IconUrl DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/security_icon.png"/>
+
+  <IconUrl DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/security_icon_32x32.png"/>
+  <HighResolutionIconUrl DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/security_icon_80x80.png"/>
   <SupportUrl DefaultValue="https://vmray.com/support"/>
 
+  <!-- Domains -->
+  <AppDomains>
+    <AppDomain>lshaikloginsoft.github.io</AppDomain>
+  </AppDomains>
+
+  <!-- Outlook host -->
   <Hosts>
     <Host Name="Mailbox"/>
   </Hosts>
 
+  <!-- API requirements -->
   <Requirements>
     <Sets>
       <Set Name="Mailbox" MinVersion="1.8"/>
     </Sets>
   </Requirements>
 
-  <!-- Legacy FormSettings for backward compatibility -->
-  <FormSettings>
-    <Form xsi:type="ItemRead">
-      <DesktopSettings>
-        <SourceLocation DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/taskpane.html"/>
-        <RequestedHeight>250</RequestedHeight>
-      </DesktopSettings>
-    </Form>
-  </FormSettings>
+  <!-- Permissions -->
+  <Permissions>ReadWriteMailbox</Permissions>
 
-  <Permissions>ReadWriteItem</Permissions>
+  <!-- Command JS loader -->
+  <FunctionFile resid="Commands.Url"/>
 
-  <Rule xsi:type="RuleCollection" Mode="Or">
-    <Rule xsi:type="ItemIs" ItemType="Message" FormType="Read"/>
-  </Rule>
-
-  <!-- Modern VersionOverrides for Ribbon button -->
-  <VersionOverrides
-    xmlns="http://schemas.microsoft.com/office/mailappversionoverrides"
-    xsi:type="VersionOverridesV1_0">
-
+  <!-- Version overrides -->
+  <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides/1.0">
     <Hosts>
       <Host xsi:type="MailHost">
         <DesktopFormFactor>
+
           <ExtensionPoint xsi:type="MessageReadCommandSurface">
             <OfficeTab id="TabDefault">
-              <Group id="PhishingGroup">
-                <Label resid="groupLabel"/>
+              <Group id="ReportPhishingGroup">
+                <Label resid="Group.Label"/>
                 <Control xsi:type="Button" id="ReportPhishingButton">
-                  <Label resid="buttonLabel"/>
+                  <Label resid="Button.Label"/>
                   <Supertip>
-                    <Title resid="buttonLabel"/>
-                    <Description resid="buttonDescription"/>
+                    <Title resid="Button.Label"/>
+                    <Description resid="Button.Tooltip"/>
                   </Supertip>
                   <Icon>
-                    <bt:Image size="16" resid="icon16"/>
-                    <bt:Image size="32" resid="icon32"/>
-                    <bt:Image size="80" resid="icon80"/>
+                    <bt:Image size="16" resid="Icon.16"/>
+                    <bt:Image size="32" resid="Icon.32"/>
+                    <bt:Image size="80" resid="Icon.80"/>
                   </Icon>
-                  <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="taskpaneUrl"/>
+                  <Action xsi:type="ExecuteFunction">
+                    <FunctionName>reportPhishing</FunctionName>
                   </Action>
                 </Control>
               </Group>
             </OfficeTab>
           </ExtensionPoint>
+
         </DesktopFormFactor>
       </Host>
     </Hosts>
 
     <Resources>
       <bt:Images>
-        <bt:Image id="icon16" DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/security_icon_16x16.png"/>
-        <bt:Image id="icon32" DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/security_icon_32x32.png"/>
-        <bt:Image id="icon80" DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/security_icon_80x80.png"/>
+        <bt:Image id="Icon.16" DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/security_icon_16x16.png"/>
+        <bt:Image id="Icon.32" DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/security_icon_32x32.png"/>
+        <bt:Image id="Icon.80" DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/security_icon_80x80.png"/>
       </bt:Images>
+
       <bt:Urls>
-        <bt:Url id="taskpaneUrl" DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/taskpane.html"/>
+        <bt:Url id="Commands.Url" DefaultValue="https://lshaikloginsoft.github.io/VMRay-Phishing-Report-Add-On/commands.html"/>
       </bt:Urls>
+
       <bt:ShortStrings>
-        <bt:String id="groupLabel" DefaultValue="Security"/>
-        <bt:String id="buttonLabel" DefaultValue="Report Phishing"/>
+        <bt:String id="Group.Label" DefaultValue="Security"/>
+        <bt:String id="Button.Label" DefaultValue="Report Phishing"/>
       </bt:ShortStrings>
+
       <bt:LongStrings>
-        <bt:String id="buttonDescription" DefaultValue="Report this email to your security team."/>
+        <bt:String id="Button.Tooltip" DefaultValue="Report this email as phishing"/>
       </bt:LongStrings>
     </Resources>
-
   </VersionOverrides>
 
 </OfficeApp>
